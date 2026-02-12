@@ -24,7 +24,7 @@
         <div id="price" class="price">...</div>
         <div id="timestamp"></div>
         <button id="updateBtn" onclick="getRate()">SPRAWDŹ AKTUALNY KURS</button>
-        <div class="footer">Korekta marży ING: +0.01 PLN</div>
+        <div class="footer">Korekta marży ING: -0.017 PLN</div>
     </div>
 
     <script>
@@ -45,7 +45,7 @@
                 const data = await res.json();
                 
                 const eurPln = data.rates.PLN;
-                const final = (eurPln + 0.01).toFixed(4);
+                const final = (eurPln - 0.017).toFixed(4);
                 
                 priceEl.innerText = final;
                 timeEl.innerText = "ODCZYT: " + new Date().toLocaleTimeString();
