@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AssembleX EUR</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#013d7c">
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        .card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; width: 80%; max-width: 350px; }
+        h1 { color: #013d7c; font-size: 16px; letter-spacing: 1px; margin-bottom: 20px; }
+        .price { font-size: 48px; font-weight: bold; color: #333; margin: 20px 0; }
+        .currency { font-size: 18px; color: #666; }
+        button { background: #fdb913; border: none; color: #000; padding: 15px 0; width: 100%; border-radius: 12px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        button:active { transform: scale(0.98); background: #e5a811; }
+        .footer { margin-top: 25px; font-size: 11px; color: #999; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>ASSEMBLEX EUR (ING)</h1>
+        <div id="price" class="price">...</div>
+        <button onclick="getRate()">ODŚWIEŻ KURS</button>
+        <div class="footer">Korekta marży: -0.02 PLN</div>
+    </div>
+
+    <script>
+        async function getRate() {
+            const priceEl = document.getElementById('price');
+            priceEl.style.opacity = "0.5";
+            try {
+                // Używamy darmowego proxy, aby ominąć blokady CORS (istotne w przeglądarce)
+                const res = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://api.nbp.pl/api/exchangerates/rates/a/eur/?format=json'));
+                const data = await res.json();
+                const nbp = JSON.parse(data.contents).rates[0].mid;
+                const final = (nbp - 0.02).toFixed(4);
+                priceEl.innerText = final;
+            } catch (e) {
+                priceEl.innerText = "Błąd";
+            } finally {
+                priceEl.style.opacity = "1";
+            }
+        }
+        getRate();
+    </script>
+</body>
+</html>
