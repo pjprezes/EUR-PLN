@@ -22,7 +22,7 @@
         <div id="price" class="price">...</div>
         <div id="timestamp"></div>
         <button id="updateBtn" onclick="getRate()">ODŚWIEŻ KURS</button>
-        <div class="footer">Korekta marży: -0.02 PLN</div>
+        <div class="footer">Korekta marży: +0.02 PLN</div>
     </div>
 
     <script>
@@ -47,7 +47,7 @@
                 const data = await res.json();
                 const nbpData = JSON.parse(data.contents);
                 const nbp = nbpData.rates[0].mid;
-                const final = (nbp - 0.02).toFixed(4);
+                const final = (nbp + 0.02).toFixed(4);
                 
                 // Aktualizacja interfejsu
                 priceEl.innerText = final;
