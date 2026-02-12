@@ -1,0 +1,15 @@
+{
+  "name": "AssembleX EUR Monitor",
+  "short_name": "AssembleX",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#013d7c",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/32/32974.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
