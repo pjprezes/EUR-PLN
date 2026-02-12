@@ -9,9 +9,9 @@
         body { font-family: sans-serif; background: #f0f2f5; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
         .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); text-align: center; width: 300px; }
         h1 { color: #013d7c; font-size: 18px; margin-bottom: 5px; }
-        .price { font-size: 42px; font-weight: bold; color: #333; margin: 15px 0; }
-        #timestamp { font-size: 11px; color: #28a745; margin-bottom: 20px; font-weight: bold; }
-        button { background: #fdb913; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .price { font-size: 42px; font-weight: bold; color: #333; margin: 15px 0; min-height: 50px; }
+        #timestamp { font-size: 11px; color: #28a745; margin-bottom: 20px; font-weight: bold; height: 14px; }
+        button { background: #fdb913; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; color: black; }
         button:active { transform: scale(0.95); }
         .footer { margin-top: 20px; font-size: 10px; color: #999; }
     </style>
@@ -31,18 +31,29 @@
             const timeEl = document.getElementById('timestamp');
             const btn = document.getElementById('updateBtn');
             
+            // Wizualny sygnał startu
             priceEl.style.opacity = "0.3";
             btn.innerText = "POBIERANIE...";
+            btn.disabled = true;
+
+            // Proxy do ominięcia blokad CORS z unikalnym parametrem czasu
+            const target = 'https://api.nbp.pl/api/exchangerates/rates/a/eur/?format=json';
+            const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(target) + '&ts=' + new Date().getTime();
 
             try {
-                const res = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://api.nbp.pl/api/exchangerates/rates/a/eur/?format=json'));
+                const res = await fetch(proxyUrl);
+                if (!res.ok) throw new Error('Network error');
+                
                 const data = await res.json();
-                const nbp = JSON.parse(data.contents).rates[0].mid;
+                const nbpData = JSON.parse(data.contents);
+                const nbp = nbpData.rates[0].mid;
                 const final = (nbp - 0.02).toFixed(4);
                 
+                // Aktualizacja interfejsu
                 priceEl.innerText = final;
                 timeEl.innerText = "AKTUALIZACJA: " + new Date().toLocaleTimeString();
                 
+                // Potwierdzenie sukcesu
                 btn.innerText = "GOTOWE! ✔";
                 btn.style.background = "#28a745";
                 btn.style.color = "white";
@@ -51,14 +62,23 @@
                     btn.innerText = "ODŚWIEŻ KURS";
                     btn.style.background = "#fdb913";
                     btn.style.color = "black";
+                    btn.disabled = false;
                 }, 1500);
+
             } catch (e) {
+                console.error('Błąd:', e);
                 priceEl.innerText = "BŁĄD";
-                btn.innerText = "PONÓW";
+                timeEl.innerText = "SPRÓBUJ PONOWNIE";
+                btn.innerText = "RETRY";
+                btn.style.background = "#dc3545";
+                btn.style.color = "white";
+                btn.disabled = false;
             } finally {
                 priceEl.style.opacity = "1";
             }
         }
+
+        // Pierwsze pobranie przy starcie apki
         getRate();
     </script>
 </body>
